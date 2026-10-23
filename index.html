@@ -1,1 +1,412 @@
 
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07130d">
+  <title>Sky Cricket Akodha</title>
+  <style>
+    :root {
+      --bg: #07130d;
+      --panel: #10251a;
+      --green: #21d875;
+      --text: #f4fff7;
+      --muted: #a6b9ac;
+      --border: #254b35;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      padding: 22px 16px;
+      background: linear-gradient(135deg, #123b24, #07130d);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      color: var(--green);
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    header p { color: var(--muted); margin-bottom: 0; }
+
+    main {
+      width: min(100% - 24px, 760px);
+      margin: 20px auto;
+    }
+
+    .hero {
+      padding: 20px;
+      border-radius: 18px;
+      background: linear-gradient(140deg, #143d26, #10251a);
+      border: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    h1 { font-size: 25px; margin: 0 0 8px; }
+    h2 { font-size: 19px; }
+
+    .muted { color: var(--muted); }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 15px;
+      font-weight: bold;
+      cursor: pointer;
+      background: var(--green);
+      color: #062011;
+    }
+
+    button:disabled { opacity: .6; }
+
+    #status {
+      color: var(--muted);
+      padding: 12px 0;
+    }
+
+    .match {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 16px;
+      margin: 12px 0;
+    }
+
+    .match-title {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .teams {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .team {
+      background: #091a10;
+      border-radius: 10px;
+      padding: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .team-name { font-weight: bold; }
+    .score {
+      color: var(--green);
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      color: var(--green);
+      border: 1px solid #287e4a;
+      border-radius: 30px;
+      padding: 4px 9px;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .result {
+      margin-top: 12px;
+      line-height: 1.5;
+      color: #d5e6d9;
+      overflow-wrap: anywhere;
+    }
+
+    .notice {
+      border: 1px solid #795c2b;
+      background: #2b2312;
+      color: #ffe2a4;
+      border-radius: 12px;
+      padding: 13px;
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    a { color: var(--green); }
+
+    @media (max-width: 380px) {
+      .teams { grid-template-columns: 1fr; }
+      h1 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">🏏 SKY CRICKET AKODHA</div>
+    <p>Cricket updates • Live scores • Match centre</p>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Cricket Match Centre</h1>
+      <p class="muted">
+        Latest match scores aur cricket updates ek hi jagah.
+      </p>
+      <button id="refreshTop" type="button">↻ Refresh Scores</button>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>🔴 Live & Recent Matches</h2>
+        <span class="muted" id="updated">अभी अपडेट नहीं हुआ</span>
+      </div>
+
+      <div id="status" role="status" aria-live="polite">
+        मैच लोड हो रहे हैं...
+      </div>
+      <div id="matches"></div>
+      <button id="refreshBottom" type="button">
+        ↻ फिर से स्कोर लोड करें
+      </button>
+    </section>
+
+    <section style="margin-top:24px">
+      <h2>📅 Match Updates</h2>
+      <div class="match">
+        <strong>मैच शेड्यूल</strong>
+        <p class="muted">
+          शेड्यूल और मैच की जानकारी उपलब्ध API के डेटा पर निर्भर करेगी।
+        </p>
+      </div>
+    </section>
+
+    <section style="margin-top:24px">
+      <h2>ℹ️ जरूरी जानकारी</h2>
+      <div class="notice">
+        लाइव स्कोर इंटरनेट और Cricket API की उपलब्धता पर निर्भर है।
+        यह वेबसाइट आधिकारिक क्रिकेट बोर्ड की वेबसाइट नहीं है।
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Sky Cricket Akodha
+    <br>Made for cricket fans 🏏
+  </footer>
+
+  <script>
+    "use strict";
+
+    const API_URL =
+      "https://sky-cricket-live.skyyadavanshi.workers.dev/live-score";
+
+    const statusBox = document.getElementById("status");
+    const matchesBox = document.getElementById("matches");
+    const updatedBox = document.getElementById("updated");
+    const buttons = [
+      document.getElementById("refreshTop"),
+      document.getElementById("refreshBottom")
+    ];
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    function makeElement(tag, className, text) {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text !== undefined) el.textContent = String(text);
+      return el;
+    }
+
+    function getText(value, fallback = "जानकारी उपलब्ध नहीं") {
+      if (value === null || value === undefined || value === "") {
+        return fallback;
+      }
+      if (typeof value === "object") return fallback;
+      return String(value);
+    }
+
+    function renderMatch(match) {
+      const card = makeElement("article", "match");
+      const statusText = getText(match.status, "Match update");
+      const badge = makeElement("span", "badge", statusText);
+      const name = getText(
+        match.name,
+        Array.isArray(match.teams) ? match.teams.join(" vs ") : "Cricket Match"
+      );
+
+      card.appendChild(badge);
+      card.appendChild(makeElement("div", "match-title", name));
+
+      const teams = makeElement("div", "teams");
+      const teamNames = Array.isArray(match.teams) ? match.teams : [];
+      const scores = Array.isArray(match.score) ? match.score : [];
+
+      for (let i = 0; i < 2; i++) {
+        const team = makeElement("div", "team");
+        team.appendChild(makeElement(
+          "div", "team-name",
+          getText(teamNames[i], "Team " + (i + 1))
+        ));
+
+        const scoreData = scores[i];
+        let scoreText = "Score unavailable";
+
+        if (scoreData && typeof scoreData === "object") {
+          const runs = scoreData.r;
+          const wickets = scoreData.w;
+          const overs = scoreData.o;
+
+          if (runs !== undefined) {
+            scoreText = String(runs);
+            if (wickets !== undefined) scoreText += "/" + wickets;
+            if (overs !== undefined) scoreText += " (" + overs + " ov)";
+          }
+        }
+
+        team.appendChild(makeElement("div", "score", scoreText));
+        teams.appendChild(team);
+      }
+
+      card.appendChild(teams);
+
+      if (match.venue) {
+        card.appendChild(makeElement(
+          "p", "muted", "📍 " + getText(match.venue)
+        ));
+      }
+
+      if (match.date) {
+        card.appendChild(makeElement(
+          "p", "muted", "📅 " + getText(match.date)
+        ));
+      }
+
+      if (match.matchType) {
+        card.appendChild(makeElement(
+          "p", "muted", "Format: " + getText(match.matchType)
+        ));
+      }
+
+      if (match.status) {
+        card.appendChild(makeElement("p", "result", match.status));
+      }
+
+      return card;
+    }
+
+    async function loadScores() {
+      buttons.forEach(button => {
+        button.disabled = true;
+        button.textContent = "लोड हो रहा है...";
+      });
+
+      statusBox.textContent = "⏳ लाइव स्कोर लोड हो रहे हैं...";
+      matchesBox.replaceChildren();
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "GET",
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error("Server error (" + response.status + ")");
+        }
+
+        const json = await response.json();
+
+        if (json.error) {
+          throw new Error(
+            typeof json.error === "string"
+              ? json.error
+              : "Cricket API ने error लौटाया।"
+          );
+        }
+
+        const data = Array.isArray(json.data)
+          ? json.data
+          : Array.isArray(json.matches)
+            ? json.matches
+            : Array.isArray(json.data?.matches)
+              ? json.data.matches
+              : null;
+
+        if (!data) {
+          throw new Error(
+            "डेटा का format समझ नहीं आया। Cloudflare Worker का response चेक करें।"
+          );
+        }
+
+        if (data.length === 0) {
+          statusBox.textContent =
+            "अभी कोई मैच डेटा उपलब्ध नहीं है। थोड़ी देर बाद Refresh करें।";
+        } else {
+          statusBox.textContent = "✅ " + data.length + " मैच मिले।";
+          data.forEach(match => matchesBox.appendChild(renderMatch(match)));
+        }
+
+        updatedBox.textContent =
+          "Updated: " + new Date().toLocaleTimeString("hi-IN");
+
+      } catch (error) {
+        let message = error.message || "Unknown error";
+
+        if (error.name === "AbortError") {
+          message = "अनुरोध में समय लग गया। फिर से कोशिश करें।";
+        } else if (error instanceof TypeError) {
+          message =
+            "नेटवर्क या CORS की समस्या। इंटरनेट और Cloudflare Worker चेक करें।";
+        }
+
+        statusBox.textContent = "❌ स्कोर लोड नहीं हुआ: " + message;
+        matchesBox.appendChild(makeElement(
+          "div",
+          "notice",
+          "Worker URL खोलकर उसका JSON response चेक करें। अगर Worker बंद है या API limit पूरी है, तो लाइव स्कोर नहीं आएगा।"
+        ));
+      } finally {
+        clearTimeout(timeout);
+        buttons.forEach((button, index) => {
+          button.disabled = false;
+          button.textContent = index === 0
+            ? "↻ Refresh Scores"
+            : "↻ फिर से स्कोर लोड करें";
+        });
+      }
+    }
+
+    buttons.forEach(button =>
+      button.addEventListener("click", loadScores)
+    );
+
+    loadScores();
+    setInterval(loadScores, 60000);
+  </script>
+</body>
+  </html>
+  
