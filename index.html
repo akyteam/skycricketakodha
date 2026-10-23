@@ -60,8 +60,8 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:11px}
 <footer>SKY CRICKET AKODHA · Match coverage depends on the data provider.</footer>
 <script>
 "use strict";
-const API="/live-score";
-const SCORECARD="/scorecard?id=";
+const API="https://sky-cricket-live.skyyadavanshi.workers.dev/live-score";
+const SCORECARD="https://sky-cricket-live.skyyadavanshi.workers.dev/scorecard?id=";
 const $=id=>document.getElementById(id);
 let all=[],filter="all",busy=false;
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
