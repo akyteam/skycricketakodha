@@ -2,163 +2,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sky Cricket Akodha - Live Score</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #07130e;
-      color: white;
-    }
-    header {
-      background: #123d29;
-      padding: 20px;
-      text-align: center;
-      border-bottom: 2px solid #22c55e;
-    }
-    h1 { margin: 0; color: #4ade80; }
-    .subtitle { margin-top: 8px; color: #ddd; }
-    #status { text-align: center; padding: 16px; color: #facc15; }
-    #matches {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-      gap: 14px;
-      padding: 14px;
-    }
-    .card {
-      background: #10251b;
-      border: 1px solid #286343;
-      border-radius: 12px;
-      padding: 16px;
-    }
-    .teams { font-size: 18px; font-weight: bold; }
-    .score { color: #4ade80; font-size: 17px; margin-top: 12px; }
-    .details { color: #cbd5e1; line-height: 1.7; margin-top: 10px; }
-    .live { color: #fb7185; font-weight: bold; }
-    button {
-      background: #16a34a; color: white; border: 0;
-      border-radius: 8px; padding: 10px 14px; margin-top: 12px;
-    }
-    footer { text-align: center; padding: 20px; color: #94a3b8; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07110c">
+<meta name="description" content="Sky Cricket Akodha - Live cricket scores, match updates and scorecards.">
+<title>Sky Cricket Akodha | Live Cricket</title>
+<style>
+:root{
+  --bg:#07110c;--panel:#0d1b13;--panel2:#12251a;
+  --line:#244531;--green:#32e875;--muted:#9aafa0;
+  --white:#f5fff7;--red:#ff646e;--gold:#f7ca63;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--white);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
+button,a{font:inherit}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer}
+.wrap{width:min(1120px,100% - 28px);margin:auto}
+.topbar{
+  position:sticky;top:0;z-index:10;background:#07110cee;
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
+}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.5px}
+.logo{
+  display:grid;place-items:center;width:42px;height:42px;border-radius:14px;
+  background:linear-gradient(145deg,#3aff88,#128b49);color:#031008;font-size:22px;
+  box-shadow:0 0 24px #32e87525;
+}
+.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}
+.live-pill{font-size:11px;font-weight:800;color:var(--green);border:1px solid #28633e;border-radius:99px;padding:7px 10px}
+.dot{display:inline-block;width:7px;height:7px;background:var(--green);border-radius:50%;margin-right:5px;box-shadow:0 0 10px var(--green)}
+.hero{padding:28px 0 20px}
+.eyebrow{color:var(--green);font-size:11px;font-weight:900;letter-spacing:2.2px}
+h1{font-size:clamp(29px,7vw,54px);line-height:1.04;letter-spacing:-1.8px;margin:9px 0 10px}
+h1 span{color:var(--green)}
+.hero p{color:var(--muted);font-size:14px;line-height:1.7;max-width:540px;margin:0}
+.hero-box{
+  position:relative;overflow:hidden;margin-top:22px;padding:19px;border:1px solid #28533a;
+  border-radius:22px;background:radial-gradient(ellipse at 95% 0%,#1a6535 0,transparent 42%),linear-gradient(135deg,#10251a,#0a1510);
+}
+.hero-box:after{content:"🏏";position:absolute;right:5px;bottom:-26px;font-size:110px;opacity:.12;transform:rotate(-18deg)}
+.hero-row{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}
+.hero-title{font-weight:850;font-size:17px}
+.hero-sub{color:var(--muted);font-size:12px;margin-top:5px}
+.refresh{
+  background:var(--green);color:#041009;border:0;border-radius:12px;padding:11px 13px;
+  font-size:12px;font-weight:900;white-space:nowrap;
+}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;position:relative;z-index:1}
+.stat{padding:12px;background:#07130cc9;border:1px solid #284b34;border-radius:14px}
+.stat strong{display:block;font-size:21px}
+.stat span{color:var(--muted);font-size:10px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:27px 0 13px}
+.section-head h2{margin:0;font-size:19px;letter-spacing:-.5px}
+.section-head p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.filters{display:flex;gap:8px;overflow:auto;padding:1px 0 12px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filter{flex-shrink:0;border:1px solid var(--line);background:var(--panel);color:#c7d7cb;border-radius:99px;padding:9px 14px;font-size:12px;font-weight:750}
+.filter.active{background:var(--green);border-color:var(--green);color:#031008}
+#status{padding:12px 14px;margin:4px 0 12px;border-radius:12px;background:#101f15;color:var(--muted);font-size:12px;line-height:1.6}
+#matches{display:grid;grid-template-columns:1fr;gap:13px}
+.match{
+  border:1px solid var(--line);border-radius:19px;padding:16px;
+  background:linear-gradient(145deg,#11251a,#0b1710 75%);min-width:0;
+}
+.match-top{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:10px}
+.tag{color:var(--green);background:#153d25;border:1px solid #265b38;border-radius:99px;padding:5px 8px;font-weight:900}
+.tag.done{color:var(--gold);background:#352b14;border-color:#66501e}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+.team{padding:12px 8px;border-radius:14px;background:#08140d;text-align:center;border:1px solid #1b3524;min-width:0}
+.flag{font-size:27px;display:block;margin-bottom:5px}
+.team-name{font-size:12px;color:#dce9df;font-weight:800;overflow-wrap:anywhere}
+.score{color:var(--green);font-size:19px;font-weight:900;letter-spacing:-.5px;margin-top:9px;overflow-wrap:anywhere}
+.overs{color:var(--muted);font-size:10px;margin-top:3px}
+.match-status{font-size:12px;color:#d6e5d9;line-height:1.6;margin:10px 0 0}
+.match-foot{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.action{border:1px solid #31533a;background:#13281a;color:#e7f7eb;border-radius:10px;padding:10px 12px;font-size:11px;font-weight:800}
+.action.primary{background:var(--green);color:#031008;border-color:var(--green)}
+.empty{text-align:center;padding:32px 18px;border:1px dashed #31533a;border-radius:16px;color:var(--muted);font-size:13px;line-height:1.7}
+.panel{border:1px solid var(--line);background:var(--panel);border-radius:17px;padding:17px;margin-bottom:12px}
+.panel h3{margin:0 0 8px;font-size:15px}
+.panel p{margin:0;color:var(--muted);font-size:12px;line-height:1.8}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.feature{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:15px}
+.feature .ico{font-size:22px}
+.feature strong{display:block;margin:8px 0 4px;font-size:13px}
+.feature span{color:var(--muted);font-size:11px;line-height:1.6}
+footer{margin-top:32px;border-top:1px solid var(--line);padding:23px 0 90px;color:var(--muted);font-size:11px;line-height:1.8}
+.footer-brand{color:var(--green);font-size:15px;font-weight:900;margin-bottom:6px}
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);
+  background:#09130df5;backdrop-filter:blur(16px);border-top:1px solid var(--line);
+  padding:8px 5px max(8px,env(safe-area-inset-bottom));
+}
+.bottom-nav a{display:grid;justify-items:center;gap:4px;color:var(--muted);font-size:10px;font-weight:750;padding:5px 0}
+.bottom-nav a b{font-size:19px}
+.bottom-nav a.active{color:var(--green)}
+.scorecard{margin-top:12px;padding:12px;border-radius:12px;background:#07130c;border:1px solid var(--line);overflow-wrap:anywhere}
+.scorecard pre{white-space:pre-wrap;word-break:break-word;font-size:11px;color:#d7e7db;max-height:300px;overflow:auto}
+@media(min-width:650px){
+  .hero{padding-top:42px}
+  #matches{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .feature-grid{grid-template-columns:repeat(4,1fr)}
+  .bottom-nav{position:static;display:flex;justify-content:center;gap:35px;border:0;background:transparent;padding:10px}
+  .bottom-nav a{display:flex;gap:7px}
+  footer{padding-bottom:25px}
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>🏏 Sky Cricket Akodha</h1>
-    <div class="subtitle">Live Cricket Scores • Worldwide</div>
-  </header>
+<header class="topbar">
+  <div class="wrap nav">
+    <a class="brand" href="#home">
+      <span class="logo">🏏</span>
+      <span>SKY CRICKET<small>AKODHA • LIVE SPORTS</small></span>
+    </a>
+    <span class="live-pill"><i class="dot"></i>LIVE CENTER</span>
+  </div>
+</header>
 
-  <div id="status">Live scores लोड हो रहे हैं...</div>
-  <main id="matches"></main>
-  <footer>Sky Cricket Akodha | Score data provided by cricket API</footer>
+<main class="wrap" id="home">
+  <section class="hero">
+    <div class="eyebrow">YOUR CRICKET DESTINATION</div>
+    <h1>Every Run.<br><span>Every Moment.</span></h1>
+    <p>Cricket updates, match scores and game-day action — all in one place.</p>
 
-  <script>
-    const API_URL =
-      "https://sky-cricket-live.skyyadavanshi.workers.dev/live-score";
+    <div class="hero-box">
+      <div class="hero-row">
+        <div><div class="hero-title">🏆 Match Center</div><div class="hero-sub">Live updates from the API</div></div>
+        <button class="refresh" id="refreshBtn">↻ Refresh</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><strong id="liveCount">—</strong><span>LIVE MATCHES</span></div>
+        <div class="stat"><strong id="totalCount">—</strong><span>MATCHES FOUND</span></div>
+        <div class="stat"><strong>24/7</strong><span>CRICKET HUB</span></div>
+      </div>
+    </div>
+  </section>
 
-    const matchesEl = document.getElementById("matches");
-    const statusEl = document.getElementById("status");
+  <section id="live">
+    <div class="section-head">
+      <div><h2>⚡ Match Center</h2><p>Latest match data from the cricket provider</p></div>
+    </div>
+    <div class="filters" id="filters">
+      <button class="filter active" data-filter="all">All Matches</button>
+      <button class="filter" data-filter="live">🔴 Live</button>
+      <button class="filter" data-filter="upcoming">Upcoming</button>
+      <button class="filter" data-filter="completed">Completed</button>
+    </div>
+    <div id="status" role="status" aria-live="polite">Connecting to live score API…</div>
+    <div id="matches"></div>
+  </section>
 
-    function escapeHTML(value) {
-      return String(value ?? "").replace(/[&<>"']/g, char => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;",
-        '"': "&quot;", "'": "&#39;"
-      }[char]));
-    }
+  <section id="schedule">
+    <div class="section-head"><div><h2>📅 Match Schedule</h2><p>Dates and fixtures supplied by the API</p></div></div>
+    <div class="panel"><h3>Stay in the game</h3><p>Available upcoming matches will appear in Match Center when returned by your API plan.</p></div>
+  </section>
 
-    function showScore(match) {
-      const teams = Array.isArray(match.teams) ? match.teams : [];
-      const scores = Array.isArray(match.score) ? match.score : [];
-      const name = teams.length ? teams.join(" vs ") : "Match";
-      const scoreText = scores.map(s => {
-        const innings = s.inning || "";
-        const runs = s.r ?? 0;
-        const wickets = s.w ?? 0;
-        const overs = s.o ?? 0;
-        return `${innings}: ${runs}/${wickets} (${overs} overs)`;
-      }).join("<br>");
+  <section id="points">
+    <div class="section-head"><div><h2>📊 Cricket Hub</h2><p>Everything in one place</p></div></div>
+    <div class="feature-grid">
+      <div class="feature"><div class="ico">⚡</div><strong>Live Scores</strong><span>Check the latest available match scores.</span></div>
+      <div class="feature"><div class="ico">🏏</div><strong>Scorecards</strong><span>Open the scorecard when the API provides it.</span></div>
+      <div class="feature"><div class="ico">🌍</div><strong>World Cricket</strong><span>International and domestic fixtures when available.</span></div>
+      <div class="feature"><div class="ico">📈</div><strong>Match Updates</strong><span>Status and innings data from the provider.</span></div>
+    </div>
+  </section>
+</main>
 
-      const live = /live|in progress|innings|stumps/i.test(
-        String(match.status || "")
-      );
+<footer><div class="wrap">
+  <div class="footer-brand">🏏 SKY CRICKET AKODHA</div>
+  Independent cricket information website. Match availability and score details depend on the cricket data provider and API plan. This site is not affiliated with any cricket board.
+  <div style="margin-top:10px">© <span id="year"></span> Sky Cricket Akodha</div>
+</div></footer>
 
-      const id = String(match.id || "");
-      const scorecardButton = /^[a-zA-Z0-9_-]+$/.test(id)
-        ? `<button data-id="${escapeHTML(id)}">Scorecard</button>`
-        : "";
+<nav class="bottom-nav">
+  <a href="#home" class="active"><b>⌂</b>Home</a>
+  <a href="#live"><b>🏏</b>Live</a>
+  <a href="#schedule"><b>▦</b>Schedule</a>
+  <a href="#points"><b>◈</b>Cricket Hub</a>
+</nav>
 
-      return `
-        <article class="card">
-          <div class="teams">${escapeHTML(name)}</div>
-          <div class="details ${live ? "live" : ""}">
-            ${escapeHTML(match.matchType || "Cricket")} ·
-            ${escapeHTML(match.status || "Status unavailable")}
-          </div>
-          <div class="score">${scoreText || "Score details not available"}</div>
-          <div class="details">
-            Venue: ${escapeHTML(match.venue || "Not available")}<br>
-            Date: ${escapeHTML(match.date || "Not available")}
-          </div>
-          ${scorecardButton}
-          <div class="details" data-scorecard="${escapeHTML(id)}"></div>
-        </article>`;
-    }
+<script>
+const API_URL = "https://sky-cricket-live.skyyadavanshi.workers.dev/live-score";
+const SCORECARD_BASE = "https://sky-cricket-live.skyyadavanshi.workers.dev/scorecard?id=";
 
-    async function loadMatches() {
-      statusEl.textContent = "Live scores लोड हो रहे हैं...";
-      try {
-        const response = await fetch(API_URL, { cache: "no-store" });
-        if (!response.ok) throw new Error("API HTTP " + response.status);
+const $ = id => document.getElementById(id);
+let allMatches = [];
+let currentFilter = "all";
+let loading = false;
 
-        const result = await response.json();
-        if (result.status && result.status !== "success") {
-          throw new Error(result.message || "API request failed");
-        }
-
-        const matches = result.data;
-        if (!Array.isArray(matches) || matches.length === 0) {
-          matchesEl.innerHTML = "";
-          statusEl.textContent =
-            "अभी API से मैच नहीं मिले। बाद में फिर जाँचें।";
-          return;
-        }
-
-        matchesEl.innerHTML = matches.map(showScore).join("");
-        statusEl.textContent =
-          `API से ${matches.length} मैच मिले · अपडेट: ${new Date().toLocaleTimeString()}`;
-      } catch (error) {
-        statusEl.textContent =
-          "Live score लोड नहीं हुआ: " + error.message;
-      }
-    }
-
-    matchesEl.addEventListener("click", async event => {
-      const button = event.target.closest("button[data-id]");
-      if (!button) return;
-
-      const id = button.dataset.id;
-      const output = button.parentElement.querySelector("[data-scorecard]");
-      output.textContent = "Scorecard लोड हो रहा है...";
-
-      try {
-        const url =
-          "https://sky-cricket-live.skyyadavanshi.workers.dev/scorecard?id=" +
-          encodeURIComponent(id);
-        const response = await fetch(url, { cache: "no-store" });
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        const result = await response.json();
-
-        output.textContent = JSON.stringify(result.data ?? result, null, 2);
-      } catch (error) {
-        output.textContent =
-          "Scorecard उपलब्ध नहीं: " + error.message;
-      }
-    });
-
-    loadMatches();
-    setInterval(loadMatches, 60000);
-  </script>
+function safe(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[ch]));
+}
+function classify(m) {
+  const s = String(m.status || "").toLowerCase();
+  if (/won|complete|result|abandon|no result|cancelled|draw|tied/.test(s)) return "completed";
+  if (/live|in progress|innings|stumps|day \d/.test(s)) return "live";
+  return m.matchStarted === false ? "upcoming" : "upcoming";
+}
+function teamFlag(name) {
+  const n = String(name || "").toLowerCase();
+  const flags = [
+    [["india","ind"],"🇮🇳"],[["australia","aus"],"🇦🇺"],
+    [["england","eng"],"🏴"],[["pakistan","pak"],"🇵🇰"],
+    [["south africa","rsa"],"🇿🇦"],[["new zealand","nz"],"🇳🇿"],
+    [["sri lanka","sl"],"🇱🇰"],[["bangladesh","ban"],"🇧🇩"],
+    [["afghanistan","afg"],"🇦🇫"],[["west indies","wi"],"🏝️"],
+    [["ireland","ire"],"🇮🇪"],[["zimbabwe","zim"],"🇿🇼"],
+    [["nepal","nep"],"🇳🇵"],[["usa","united states"],"🇺🇸"]
+  ];
+  const found = flags.find(([keys]) => keys.some(k => n.includes(k)));
+  return found ? found[1] : "🏏";
+}
+function scoreLine(s) {
+  const innings = s.inning ? safe(s.inning) + " · " : "";
+  const runs = s.r ?? "—", wkts = s.w ?? "—", overs = s.o ?? "—";
+  return `<div class="score">${innings}${safe(runs)}/${safe(wkts)}</div><div class="overs">${safe(overs)} overs</div>`;
+}
+function renderMatch(m) {
+  const teams = Array.isArray(m.teams) ? m.teams : [];
+  const scores = Array.isArray(m.score) ? m.score : [];
+  const status = m.status || "Match status unavailable";
+  const kind = classify(m);
+  const scoreHtml = scores.length ? scores.map(scoreLine).join("") : '<div class="overs">Score not supplied by API</div>';
+  const id = String(m.id || "");
+  const validId = /^[\w-]+$/.test(id);
+  return `<article class="match" data-kind="${kind}">
+    <div class="match-top"><span>${safe(m.matchType || "CRICKET").toUpperCase()} · ${safe(m.date || "")}</span>
+    <span class="tag ${kind === "completed" ? "done" : ""}">${kind === "live" ? "● LIVE" : kind === "completed" ? "RESULT" : "FIXTURE"}</span></div>
+    <div class="teams">
+      ${[0,1].map(i=>`<div class="team"><span class="flag">${teamFlag(teams[i] || "")}</span><div class="team-name">${safe(teams[i] || "Team TBC")}</div>${scores[i] ? scoreLine(scores[i]) : ""}</div>`).join("")}
+    </div>
+    ${scores.length > 2 ? `<div>${scores.slice(2).map(scoreLine).join("")}</div>` : ""}
+    <p class="match-status">${safe(status)}</p>
+    <div class="match-foot">
+      ${validId ? `<button class="action primary" data-score="${safe(id)}">View Scorecard ↗</button>` : ""}
+      <span class="action">${safe(m.venue || "Venue unavailable")}</span>
+    </div>
+    ${validId ? `<div class="scorecard" id="sc-${safe(id)}" hidden></div>` : ""}
+  </article>`;
+}
+function applyFilter() {
+  const matches = currentFilter === "all" ? allMatches :
+    allMatches.filter(m => classify(m) === currentFilter);
+  $("matches").innerHTML = matches.length ? matches.map(renderMatch).join("") :
+    `<div class="empty">No ${currentFilter === "all" ? "" : currentFilter + " "}matches returned by the API right now.</div>`;
+}
+async function loadMatches() {
+  if (loading) return;
+  loading = true;
+  $("refreshBtn").disabled = true;
+  $("refreshBtn").textContent = "Loading…";
+  $("status").textContent = "Fetching the latest match data…";
+  try {
+    const response = await fetch(API_URL, {cache:"no-store"});
+    const body = await response.json().catch(()=>({}));
+    if (!response.ok) throw new Error(body.message || body.error || "API HTTP " + response.status);
+    if (body.status && body.status !== "success") throw new Error(body.message || body.error || "API request failed");
+    const data = Array.isArray(body.data) ? body.data : [];
+    allMatches = data;
+    $("liveCount").textContent = data.filter(m => classify(m) === "live").length;
+    $("totalCount").textContent = data.length;
+    $("status").textContent = data.length
+      ? "✓ Match data updated · " + new Date().toLocaleTimeString()
+      : "API ने अभी कोई मैच नहीं लौटाया। बाद में दोबारा जाँचें।";
+    applyFilter();
+  } catch (e) {
+    $("status").textContent = "Live score unavailable: " + e.message +
+      ". Check the API limit or Cloudflare Worker.";
+    $("matches").innerHTML = `<div class="empty">🏏 लाइव स्कोर अभी उपलब्ध नहीं है।<br>कृपया कुछ समय बाद Refresh करें।<br><br><button class="action primary" id="retryBtn">Try Again</button></div>`;
+  } finally {
+    loading = false;
+    $("refreshBtn").disabled = false;
+    $("refreshBtn").textContent = "↻ Refresh";
+  }
+}
+$("matches").addEventListener("click", async event => {
+  const btn = event.target.closest("[data-score], #retryBtn");
+  if (!btn) return;
+  if (btn.id === "retryBtn") return loadMatches();
+  const id = btn.dataset.score;
+  const target = $("sc-" + id);
+  if (!target) return;
+  if (!target.hidden) { target.hidden = true; return; }
+  target.hidden = false;
+  target.innerHTML = "<p>Loading scorecard…</p>";
+  try {
+    const r = await fetch(SCORECARD_BASE + encodeURIComponent(id), {cache:"no-store"});
+    const b = await r.json().catch(()=>({}));
+    if (!r.ok) throw new Error(b.message || b.error || "HTTP " + r.status);
+    target.innerHTML = `<pre>${safe(JSON.stringify(b.data ?? b, null, 2))}</pre>`;
+  } catch(e) {
+    target.innerHTML = `<p>Scorecard unavailable: ${safe(e.message)}</p>`;
+  }
+});
+$("filters").addEventListener("click", event => {
+  const btn = event.target.closest("[data-filter]");
+  if (!btn) return;
+  currentFilter = btn.dataset.filter;
+  document.querySelectorAll(".filter").forEach(b=>b.classList.toggle("active",b===btn));
+  applyFilter();
+});
+$("refreshBtn").addEventListener("click", loadMatches);
+document.querySelectorAll(".bottom-nav a").forEach(a => a.addEventListener("click", () => {
+  document.querySelectorAll(".bottom-nav a").forEach(x=>x.classList.toggle("active",x===a));
+}));
+$("year").textContent = new Date().getFullYear();
+loadMatches();
+// Auto-refresh every 5 minutes to reduce free API usage.
+setInterval(loadMatches, 300000);
+</script>
 </body>
 </html>
