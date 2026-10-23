@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07130d">
+<meta name="description" content="Sky Cricket Akodha - क्रिकेट स्कोर, मैच शेड्यूल और अधिकृत वीडियो हिंदी में।">
+<title>Sky Cricket Akodha | क्रिकेट हिंदी में</title>
+<style>
+:root {
+  --bg:#07130d; --panel:#102219; --green:#08b86a; --light:#9affc5;
+  --text:#f3fff7; --muted:#b2c9ba; --border:#254333;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans Devanagari",sans-serif}
+header{padding:23px 16px;background:linear-gradient(130deg,#07552f,#07130d);border-bottom:2px solid var(--green)}
+.brand{font-size:25px;font-weight:800;margin:0}
+.brand span{color:var(--light)}
+header p{color:#d0f6dc;margin:9px 0 0}
+nav{display:flex;gap:9px;overflow-x:auto;padding:12px;background:#0c1d13;position:sticky;top:0;z-index:5}
+nav a{flex-shrink:0;text-decoration:none;color:white;background:#193728;padding:10px 13px;border-radius:20px;font-size:14px}
+nav a:hover{background:var(--green);color:#001b0d}
+main{max-width:760px;margin:auto;padding:15px}
+.hero{padding:23px 18px;border-radius:18px;background:linear-gradient(140deg,#10472b,#11251a);border:1px solid #286b43}
+.hero h2{font-size:25px;margin:0 0 10px}
+p{line-height:1.6}
+.muted{color:var(--muted);font-size:14px}
+h2.section{font-size:21px;margin-top:27px}
+.card{background:var(--panel);padding:16px;margin:12px 0;border:1px solid var(--border);border-radius:15px}
+.label{font-size:12px;color:var(--light);font-weight:bold}
+.teams{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.team{font-size:17px;font-weight:bold}
+.score{font-size:24px;font-weight:bold;color:var(--light);margin-top:9px}
+button,.btn{display:inline-block;border:0;border-radius:9px;padding:12px 15px;background:var(--green);color:#03190c;text-decoration:none;font-weight:bold;cursor:pointer;font-size:14px}
+.btn-secondary{background:#244735;color:white}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:#132b1e;border:1px solid var(--border);border-radius:12px;padding:15px;text-align:center}
+.tile b{display:block;font-size:20px;margin-bottom:6px}
+a{color:var(--light)}
+footer{text-align:center;padding:25px 12px;border-top:1px solid var(--border);color:var(--muted)}
+.small{font-size:12px;color:var(--muted)}
+@media(max-width:400px){.brand{font-size:22px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1 class="brand">🏏 SKY <span>CRICKET AKODHA</span></h1>
+  <p>क्रिकेट की हर खबर • हिंदी में</p>
+</header>
+<nav aria-label="मुख्य मेन्यू">
+  <a href="#home">होम</a><a href="#live">लाइव स्कोर</a><a href="#matches">मैच शेड्यूल</a><a href="#videos">वीडियो</a><a href="#news">न्यूज़</a>
+</nav>
+<main id="home">
+  <section class="hero">
+    <h2>स्वागत है Sky Cricket Akodha में!</h2>
+    <p>क्रिकेट स्कोर, मैच अपडेट और अधिकृत वीडियो एक ही जगह।</p>
+    <a class="btn" href="#live">मैच देखें ↓</a>
+  </section>
+  <div class="grid" style="margin-top:14px">
+    <div class="tile"><b>🏏</b>मैच स्कोर</div><div class="tile"><b>📅</b>मैच शेड्यूल</div>
+    <div class="tile"><b>▶️</b>अधिकृत वीडियो</div><div class="tile"><b>📰</b>क्रिकेट न्यूज़</div>
+  </div>
+
+  <section id="live">
+    <h2 class="section">🔴 लाइव मैच स्कोर</h2>
+    <p class="muted">स्कोर API से लोड होगा। नीचे दिए गए स्कोर में देरी हो सकती है; आधिकारिक स्कोरकार्ड भी देखें।</p>
+    <div id="live-status" class="card" aria-live="polite">
+      <span class="label">स्कोर लोड हो रहा है…</span>
+      <p class="muted">कृपया कुछ क्षण प्रतीक्षा करें।</p>
+    </div>
+    <button id="refresh-scores" type="button">↻ स्कोर रिफ्रेश करें</button>
+    <p class="small">लाइव स्कोर उपलब्धता API प्रदाता पर निर्भर है। यह वेबसाइट आधिकारिक प्रसारक नहीं है।</p>
+  </section>
+
+  <section id="matches">
+    <h2 class="section">📅 मैच शेड्यूल / हाल के मैच</h2>
+    <div id="schedule-status" class="card" aria-live="polite">
+      <span class="label">मैच सूची लोड हो रही है…</span>
+    </div>
+  </section>
+
+  <section id="videos">
+    <h2 class="section">▶️ अधिकृत क्रिकेट वीडियो</h2>
+    <div class="card">
+      <b>आधिकारिक क्रिकेट वीडियो</b>
+      <p class="muted">वीडियो उनके अधिकृत चैनल या प्रदाता से देखें। यह लिंक केवल YouTube खोलता है; इसे लाइव प्रसारण की गारंटी न समझें।</p>
+      <a class="btn" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">YouTube खोलें ↗</a>
+    </div>
+  </section>
+
+  <section id="news">
+    <h2 class="section">📰 क्रिकेट न्यूज़</h2>
+    <div class="card">
+      <b>ताज़ा क्रिकेट समाचार</b>
+      <p class="muted">समाचार API अभी कनेक्ट नहीं है।</p>
+    </div>
+  </section>
+</main>
+<footer>
+  <b>🏏 Sky Cricket Akodha</b><p>आपका क्रिकेट, आपकी भाषा।</p>
+  <p class="muted">स्वतंत्र क्रिकेट वेबसाइट। आधिकारिक प्रसारकों से संबद्ध होने का दावा नहीं।</p>
+  <p>© 2026 Sky Cricket Akodha</p>
+</footer>
+
+<script>
+(() => {
+  // API key केवल Cloudflare Worker में रखें; वेबसाइट में कभी न डालें।
+  const API_URL = "https://sky-cricket-live.skyyadavanshi.workers.dev/live-score";
+  const liveEl = document.getElementById("live-status");
+  const scheduleEl = document.getElementById("schedule-status");
+  const refreshBtn = document.getElementById("refresh-scores");
+
+  function esc(value) {
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    })[ch]);
+  }
+
+  function scoreText(team) {
+    const s = team?.score;
+    if (Array.isArray(s) && s.length) {
+      return s.map(item => {
+        const inn = [item.inning, item.r ?? item.runs, item.w ?? item.wickets, item.o ?? item.overs]
+          .filter(v => v !== undefined && v !== null && v !== "").join(" ");
+        return inn || JSON.stringify(item);
+      }).join(" · ");
+    }
+    if (typeof s === "string" || typeof s === "number") return String(s);
+    return "";
+  }
+
+  function matchCard(match) {
+    const teams = Array.isArray(match.teams) ? match.teams : [];
+    const score = Array.isArray(match.score) ? match.score : [];
+    const scoreFor = (teamName, idx) => {
+      const found = score.find(s => s?.inning && teamName && String(s.inning).toLowerCase().includes(String(teamName).toLowerCase()));
+      const item = found || score[idx];
+      if (!item) return "";
+      const runs = item.r ?? item.runs;
+      const wickets = item.w ?? item.wickets;
+      const overs = item.o ?? item.overs;
+      let out = "";
+      if (runs !== undefined && runs !== null) out += runs;
+      if (wickets !== undefined && wickets !== null) out += "/" + wickets;
+      if (overs !== undefined && overs !== null && overs !== "") out += " (" + overs + " ov)";
+      return out;
+    };
+
+    let teamMarkup = "";
+    if (teams.length) {
+      teamMarkup = `<div class="teams">${teams.map((name, i) => {
+        const sc = scoreFor(name, i);
+        return `<div><div class="team">${esc(name)}</div><div class="score">${esc(sc || "स्कोर उपलब्ध नहीं")}</div></div>`;
+      }).join("")}</div>`;
+    } else {
+      teamMarkup = `<p class="muted">टीम विवरण उपलब्ध नहीं।</p>`;
+    }
+
+    const status = match.status || match.matchStatus || "स्थिति उपलब्ध नहीं";
+    const title = match.name || (teams.length ? teams.join(" vs ") : "क्रिकेट मैच");
+    const venue = match.venue || "";
+    const date = match.dateTimeGMT || match.date || "";
+    return `<article class="card">
+      <span class="label">${esc(match.matchType || "MATCH")}${match.matchEnded ? " • समाप्त" : match.matchStarted ? " • शुरू" : ""}</span>
+      <h3>${esc(title)}</h3>
+      ${teamMarkup}
+      <p><b>स्थिति:</b> ${esc(status)}</p>
+      ${venue ? `<p class="muted">📍 ${esc(venue)}</p>` : ""}
+      ${date ? `<p class="muted">🕒 ${esc(date)}</p>` : ""}
+    </article>`;
+  }
+
+  async function loadScores() {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = "लोड हो रहा है…";
+    liveEl.innerHTML = '<span class="label">स्कोर लोड हो रहा है…</span><p class="muted">कृपया प्रतीक्षा करें।</p>';
+    scheduleEl.innerHTML = '<span class="label">मैच सूची लोड हो रही है…</span>';
+    try {
+      const response = await fetch(API_URL, { cache: "no-store" });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      // CricAPI currentMatches endpoint सामान्यतः data.data में मैचों की सूची देता है।
+      const matches = Array.isArray(data.data) ? data.data :
+        Array.isArray(data.matches) ? data.matches : [];
+
+      if (!matches.length) {
+        const msg = data.message || "इस समय API से मैच सूची नहीं मिली।";
+        liveEl.innerHTML = `<div class="card"><b>अभी लाइव मैच उपलब्ध नहीं</b><p class="muted">${esc(msg)}</p></div>`;
+        scheduleEl.innerHTML = '<div class="card"><p class="muted">फिलहाल कोई मैच सूची उपलब्ध नहीं है। बाद में रिफ्रेश करें।</p></div>';
+        return;
+      }
+
+      const liveMatches = matches.filter(m => m.matchStarted === true && m.matchEnded !== true);
+      const liveList = liveMatches.length ? liveMatches : matches.filter(m => m.matchEnded !== true).slice(0, 5);
+      liveEl.innerHTML = liveList.length
+        ? liveList.slice(0, 10).map(matchCard).join("")
+        : '<div class="card"><b>अभी कोई लाइव मैच नहीं</b><p class="muted">नीचे हाल के/आने वाले मैच देखें।</p></div>';
+
+      const rest = matches.filter(m => !liveMatches.includes(m)).slice(0, 10);
+      scheduleEl.innerHTML = rest.length
+        ? rest.map(matchCard).join("")
+        : '<div class="card"><p class="muted">अभी अन्य मैच API से उपलब्ध नहीं हैं।</p></div>';
+
+      const note = data.info?.hitsToday !== undefined
+        ? `<p class="small">आज API उपयोग: ${esc(data.info.hitsToday)} / ${esc(data.info.hitsLimit ?? "—")}</p>` : "";
+      liveEl.insertAdjacentHTML("beforeend", note);
+    } catch (error) {
+      liveEl.innerHTML = `<div class="card"><b>स्कोर लोड नहीं हो पाया</b><p class="muted">${esc(error.message)}। इंटरनेट और Worker URL जाँचें, फिर रिफ्रेश करें।</p></div>`;
+      scheduleEl.innerHTML = '<div class="card"><p class="muted">मैच सूची अभी उपलब्ध नहीं।</p></div>';
+    } finally {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = "↻ स्कोर रिफ्रेश करें";
+    }
+  }
+
+  refreshBtn.addEventListener("click", loadScores);
+  loadScores();
+  // हर 60 सेकंड पर रिफ्रेश; API की rate limit का ध्यान रखें।
+  setInterval(loadScores, 60000);
+})();
+</script>
+</body>
+</html>
