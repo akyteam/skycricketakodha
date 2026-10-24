@@ -1,125 +1,500 @@
 
-const API_BASE = "https://api.cricapi.com/v1";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07110c">
+  <title>Sky Cricket Akodha | Live Cricket</title>
+  <style>
+    :root {
+      --bg: #07110c;
+      --panel: #101d15;
+      --green: #21e875;
+      --muted: #a1b3a7;
+      --border: #263b2e;
+    }
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Content-Type": "application/json; charset=utf-8",
-  "Cache-Control": "public, max-age=60"
-};
+    * { box-sizing: border-box; }
 
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: corsHeaders
-  });
-}
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: #f5fff7;
+      font-family: Arial, sans-serif;
+    }
 
-function isWomenMatch(match) {
-  const text = [
-    match.name,
-    match.matchType,
-    match.series,
-    match.seriesName,
-    match.teams?.join(" ")
-  ].filter(Boolean).join(" ").toLowerCase();
+    header {
+      padding: 22px 16px;
+      background: linear-gradient(135deg, #102b1b, #07110c);
+      border-bottom: 1px solid var(--border);
+    }
 
-  return /\bwomen\b|\bwomens\b|\bwmn\b|\bwt20\b|\bwt20i\b|\bwodi\b/.test(text);
-}
+    .brand {
+      color: var(--green);
+      font-size: 25px;
+      font-weight: 900;
+    }
 
-async function fetchApi(url, cacheSeconds = 60) {
-  const response = await fetch(url, {
-    headers: { Accept: "application/json" },
-    cf: { cacheTtl: cacheSeconds, cacheEverything: true }
-  });
+    .sub { color: var(--muted); margin-top: 7px; font-size: 13px; }
 
-  const text = await response.text();
+    .live-label {
+      display: inline-block;
+      color: var(--green);
+      font-size: 12px;
+      margin-top: 14px;
+      font-weight: bold;
+    }
 
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error("Cricket API returned non-JSON data.");
+    main { max-width: 850px; margin: auto; padding: 16px; }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 5px 0 15px;
+    }
+
+    .filters button, .action {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: white;
+      border-radius: 20px;
+      padding: 10px 15px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filters button.active, .action {
+      background: var(--green);
+      color: #041109;
+      border-color: var(--green);
+      font-weight: bold;
+    }
+
+    .status {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    #message {
+      color: var(--muted);
+      padding: 20px 4px;
+      line-height: 1.6;
+    }
+
+    .match {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+      animation: appear .3s ease;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .match-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 15px;
+    }
+
+    .team {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 13px 0;
+      align-items: center;
+    }
+
+    .team-name { font-weight: bold; }
+    .score { color: var(--green); font-weight: bold; text-align: right; }
+    .result { color: var(--muted); font-size: 13px; margin-top: 14px; }
+
+    .match-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .action { padding: 10px 14px; }
+    .action:disabled { opacity: .5; cursor: not-allowed; }
+
+    .section-title { font-size: 18px; margin: 10px 0 4px; }
+
+    .scorecard {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .scorecard h4 { color: var(--green); }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td {
+      text-align: left;
+      padding: 9px 7px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    th { color: var(--muted); }
+    .hidden { display: none; }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 25px 10px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="brand">🏏 SKY CRICKET AKODHA</div>
+  <div class="sub">Live Scores • Match Updates • Full Scorecards</div>
+  <div class="live-label">● CRICKET CENTRE</div>
+</header>
+
+<main>
+  <div class="section-title">Matches</div>
+  <div class="sub">Scores are shown when available from the cricket data provider.</div>
+
+  <div class="filters" id="filters">
+    <button class="active" data-filter="all">All Matches</button>
+    <button data-filter="live">🔴 Live</button>
+    <button data-filter="upcoming">Upcoming</button>
+    <button data-filter="result">Results</button>
+    <button data-filter="women">Women</button>
+  </div>
+
+  <button class="action" id="refresh">↻ Refresh Matches</button>
+  <div id="message" role="status">Loading cricket matches…</div>
+  <div id="matches"></div>
+</main>
+
+<footer>
+  Sky Cricket Akodha · Unofficial cricket score website<br>
+  Match data depends on the availability and limits of the data provider.
+</footer>
+
+<script>
+  // Your Cloudflare Worker endpoints
+  const API =
+    "https://sky-cricket-live.skyyadavanshi.workers.dev/live-score";
+
+  const SCORECARD =
+    "https://sky-cricket-live.skyyadavanshi.workers.dev/scorecard?id=";
+
+  const matchesBox = document.getElementById("matches");
+  const message = document.getElementById("message");
+  const refreshButton = document.getElementById("refresh");
+
+  let allMatches = [];
+  let activeFilter = "all";
+  let loading = false;
+
+  function safe(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
   }
 
-  if (!response.ok || data.status === "failure") {
-    throw new Error(data.reason || data.message || "Cricket API request failed.");
+  function getName(match, index) {
+    if (Array.isArray(match.teams) && match.teams[index]) {
+      const team = match.teams[index];
+      return typeof team === "string" ? team : team.name || "Team";
+    }
+    return index === 0 ? "Team 1" : "Team 2";
   }
 
-  return data;
-}
+  function getScore(match, index) {
+    const score = Array.isArray(match.score) ? match.score[index] : null;
 
-export default {
-  async fetch(request, env) {
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+    if (score && typeof score === "object") {
+      const runs = score.r ?? score.runs;
+      const wickets = score.w ?? score.wickets;
+      const overs = score.o ?? score.overs;
+      if (runs == null) return "Score unavailable";
+      return `${runs}${wickets != null ? "/" + wickets : ""}` +
+        (overs != null ? ` (${overs} ov)` : "");
     }
 
-    const url = new URL(request.url);
-    const path = url.pathname;
+    return score == null ? "—" : String(score);
+  }
 
-    if (request.method !== "GET") {
-      return json({ status: "failure", message: "GET only" }, 405);
+  function matchText(match) {
+    return [
+      match.name,
+      match.matchType,
+      match.status,
+      match.series,
+      match.seriesName,
+      ...(Array.isArray(match.teams) ? match.teams.map(t =>
+        typeof t === "string" ? t : t.name || ""
+      ) : [])
+    ].filter(Boolean).join(" ").toLowerCase();
+  }
+
+  function isWomen(match) {
+    return match.isWomen === true ||
+      /\bwomen\b|\bwomens\b|\bwmn\b|\bwt20i?\b|\bwodi\b/.test(matchText(match));
+  }
+
+  function matchState(match) {
+    const text = String(match.status || "").toLowerCase();
+
+    if (/\blive\b|\bin progress\b|\binnings\b/.test(text)) return "live";
+    if (/\bwon\b|\bdrawn\b|\btied\b|\babandoned\b|\bno result\b|\bresult\b/.test(text)) return "result";
+    if (match.date) {
+      const date = new Date(match.date).getTime();
+      if (!Number.isNaN(date) && date > Date.now()) return "upcoming";
+    }
+    return "other";
+  }
+
+  function render() {
+    const filtered = allMatches.filter(match => {
+      if (activeFilter === "women") return isWomen(match);
+      if (activeFilter === "all") return true;
+      return matchState(match) === activeFilter;
+    });
+
+    matchesBox.innerHTML = "";
+
+    if (!filtered.length) {
+      message.textContent = activeFilter === "women"
+        ? "No women’s matches are currently available in the returned API data."
+        : "No matches found for this filter. Try All Matches.";
+      return;
     }
 
-    if (!env.CRICKET_API_KEY) {
-      return json({
-        status: "failure",
-        message: "CRICKET_API_KEY secret is missing."
-      }, 500);
-    }
+    message.textContent = `${filtered.length} match(es) available`;
 
-    try {
-      if (path === "/live-score" || path === "/") {
-        const apiUrl = new URL(`${API_BASE}/currentMatches`);
-        apiUrl.searchParams.set("apikey", env.CRICKET_API_KEY);
-        apiUrl.searchParams.set("offset", "0");
+    filtered.forEach(match => {
+      const name = match.name || "Cricket Match";
+      const type = match.matchType || "Cricket";
+      const status = match.status || "Status unavailable";
+      const state = matchState(match);
+      const id = match.id || match.unique_id || "";
+      const card = document.createElement("article");
+      card.className = "match";
 
-        const result = await fetchApi(apiUrl.toString(), 60);
-        const matches = Array.isArray(result.data) ? result.data : [];
+      card.innerHTML = `
+        <div class="match-head">
+          <span>${safe(type)}${isWomen(match) ? " · Women" : ""}</span>
+          <span class="status">${safe(state === "live" ? "● Live" : state)}</span>
+        </div>
+        <strong>${safe(name)}</strong>
+        <div class="team">
+          <span class="team-name">${safe(getName(match, 0))}</span>
+          <span class="score">${safe(getScore(match, 0))}</span>
+        </div>
+        <div class="team">
+          <span class="team-name">${safe(getName(match, 1))}</span>
+          <span class="score">${safe(getScore(match, 1))}</span>
+        </div>
+        <div class="result">${safe(status)}</div>
+        <div class="match-bottom">
+          <span class="sub">${safe(match.date || "")}</span>
+          <button class="action scorecard-btn" ${id ? "" : "disabled"}>
+            Full Scorecard
+          </button>
+        </div>
+        <div class="scorecard hidden"></div>
+      `;
 
-        return json({
-          status: "success",
-          count: matches.length,
-          data: matches.map(match => ({
-            ...match,
-            isWomen: isWomenMatch(match)
-          }))
-        });
-      }
+      const scorecardButton = card.querySelector(".scorecard-btn");
+      const scorecardBox = card.querySelector(".scorecard");
 
-      if (path === "/scorecard") {
-        const id = url.searchParams.get("id");
+      scorecardButton.addEventListener("click", async () => {
+        if (!id) return;
 
-        if (!id || !/^[\w-]+$/.test(id)) {
-          return json({
-            status: "failure",
-            message: "A valid match id is required."
-          }, 400);
+        if (!scorecardBox.classList.contains("hidden")) {
+          scorecardBox.classList.add("hidden");
+          scorecardButton.textContent = "Full Scorecard";
+          return;
         }
 
-        const apiUrl = new URL(`${API_BASE}/match_scorecard`);
-        apiUrl.searchParams.set("apikey", env.CRICKET_API_KEY);
-        apiUrl.searchParams.set("id", id);
+        scorecardBox.classList.remove("hidden");
+        scorecardBox.textContent = "Loading scorecard…";
+        scorecardButton.disabled = true;
 
-        const result = await fetchApi(apiUrl.toString(), 60);
+        try {
+          const response = await fetch(
+            SCORECARD + encodeURIComponent(id),
+            { headers: { Accept: "application/json" } }
+          );
+          const result = await response.json();
 
-        return json({
-          status: "success",
-          data: result.data ?? result
+          if (!response.ok || result.status === "failure") {
+            throw new Error(result.message || "Scorecard unavailable");
+          }
+
+          showScorecard(scorecardBox, result.data || result);
+          scorecardButton.textContent = "Hide Scorecard";
+        } catch (error) {
+          scorecardBox.textContent = error.message ||
+            "Scorecard could not be loaded. Try again later.";
+        } finally {
+          scorecardButton.disabled = false;
+        }
+      });
+
+      matchesBox.appendChild(card);
+    });
+  }
+
+  function showScorecard(container, data) {
+    container.innerHTML = "";
+
+    const innings = Array.isArray(data)
+      ? data
+      : Array.isArray(data.scorecard) ? data.scorecard
+      : Array.isArray(data.innings) ? data.innings
+      : [];
+
+    if (!innings.length) {
+      container.textContent =
+        "The provider did not return a recognized scorecard format for this match.";
+      return;
+    }
+
+    innings.forEach((inning, index) => {
+      const title = document.createElement("h4");
+      title.textContent = inning.inning || inning.name ||
+        `Innings ${index + 1}`;
+      container.appendChild(title);
+
+      const batters = inning.batting || inning.batsmen || [];
+      if (batters.length) {
+        const heading = document.createElement("p");
+        heading.textContent = "Batting";
+        container.appendChild(heading);
+
+        const table = document.createElement("table");
+        table.innerHTML = `
+          <thead><tr>
+            <th>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th>
+          </tr></thead>
+          <tbody></tbody>`;
+        const tbody = table.querySelector("tbody");
+
+        batters.forEach(player => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${safe(player.batsman || player.batter || player.name || "—")}</td>
+            <td>${safe(player.r ?? player.runs ?? "—")}</td>
+            <td>${safe(player.b ?? player.balls ?? "—")}</td>
+            <td>${safe(player["4s"] ?? player.fours ?? "—")}</td>
+            <td>${safe(player["6s"] ?? player.sixes ?? "—")}</td>
+            <td>${safe(player.sr ?? player.strikeRate ?? "—")}</td>`;
+          tbody.appendChild(tr);
         });
+
+        container.appendChild(table);
       }
 
-      return json({
-        status: "failure",
-        message: "Route not found"
-      }, 404);
+      const bowlers = inning.bowling || inning.bowlers || [];
+      if (bowlers.length) {
+        const heading = document.createElement("p");
+        heading.textContent = "Bowling";
+        container.appendChild(heading);
+
+        const table = document.createElement("table");
+        table.innerHTML = `
+          <thead><tr>
+            <th>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Eco</th>
+          </tr></thead>
+          <tbody></tbody>`;
+        const tbody = table.querySelector("tbody");
+
+        bowlers.forEach(player => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${safe(player.bowler || player.name || "—")}</td>
+            <td>${safe(player.o ?? player.overs ?? "—")}</td>
+            <td>${safe(player.m ?? player.maidens ?? "—")}</td>
+            <td>${safe(player.r ?? player.runs ?? "—")}</td>
+            <td>${safe(player.w ?? player.wickets ?? "—")}</td>
+            <td>${safe(player.eco ?? player.economy ?? "—")}</td>`;
+          tbody.appendChild(tr);
+        });
+
+        container.appendChild(table);
+      }
+    });
+  }
+
+  async function loadMatches() {
+    if (loading) return;
+
+    loading = true;
+    refreshButton.disabled = true;
+    message.textContent = "Loading matches…";
+
+    try {
+      const response = await fetch(API, {
+        headers: { Accept: "application/json" },
+        cache: "no-store"
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || result.status === "failure") {
+        throw new Error(result.message || "Cricket API request failed.");
+      }
+
+      if (!Array.isArray(result.data)) {
+        throw new Error("Unexpected API response: match list not found.");
+      }
+
+      allMatches = result.data;
+      render();
     } catch (error) {
-      return json({
-        status: "failure",
-        message: error.message || "Cricket service unavailable"
-      }, 502);
+      message.textContent =
+        "Could not load matches: " + (error.message || "Unknown error") +
+        ". If the API quota is exhausted, wait until it resets.";
+    } finally {
+      loading = false;
+      refreshButton.disabled = false;
     }
   }
-};
+
+  document.querySelectorAll("#filters button").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll("#filters button").forEach(item =>
+        item.classList.remove("active")
+      );
+      button.classList.add("active");
+      activeFilter = button.dataset.filter;
+      render();
+    });
+  });
+
+  refreshButton.addEventListener("click", loadMatches);
+
+  loadMatches();
+
+  // Refresh once every 10 minutes to limit API requests.
+  setInterval(loadMatches, 10 * 60 * 1000);
+</script>
+</body>
+  </html>
+  
